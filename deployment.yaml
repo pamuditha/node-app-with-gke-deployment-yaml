@@ -14,8 +14,10 @@ spec:
         env: development
     spec:
       containers:
-      - name: my-app
-        image: gcr.io/[PROJECT_ID]/app:v1
+        - image: >-
+            gcr.io/auth-app-279713/github.com/pamuditha/node-app-with-gke-deployment-yaml
+          imagePullPolicy: IfNotPresent
+          name: node-app-with-gke-deployment-yaml-1
         ports:
         - containerPort: 4000
         env:
