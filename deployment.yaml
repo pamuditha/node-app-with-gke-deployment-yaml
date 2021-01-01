@@ -2,14 +2,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: new-app
-  name: new-app
+    app: appps
+  name: appps
   namespace: default
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: new-app
+      app: appps
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       labels:
-        app: new-app
+        app: appps
     spec:
       containers:
         - image: >-
@@ -30,8 +30,8 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   labels:
-    app: new-app
-  name: new-app-hpa-lbit
+    app: appps
+  name: appps-hpa-mcso
   namespace: default
 spec:
   maxReplicas: 5
@@ -44,26 +44,4 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: new-app
----
-apiVersion: v1
-kind: Service
-metadata:
-  finalizers:
-    - service.kubernetes.io/load-balancer-cleanup
-  labels:
-    app: new-app
-  name: new-app-service
-  namespace: default
-spec:
-  clusterIP: 10.8.15.221
-  externalTrafficPolicy: Cluster
-  ports:
-    - nodePort: 32596
-      port: 80
-      protocol: TCP
-      targetPort: 4000
-  selector:
-    app: new-app
-  sessionAffinity: None
-  type: LoadBalancer
+    name: appps
