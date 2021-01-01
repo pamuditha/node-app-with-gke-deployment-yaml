@@ -22,8 +22,8 @@ Replace [PROJECT_ID] in deployment.yaml with your GCP project ID.
 Get credentials to Google Container Registry
 gcloud auth configure-docker
 Build and push the docker image to Google Container Registry
-docker build -t gcr.io/[PROJECT_ID]/app:v1 .
-docker push gcr.io/[PROJECT_ID]/app:v1
+`docker build -t gcr.io/[PROJECT_ID]/app:v1 .`
+`docker push gcr.io/[PROJECT_ID]/app:v1`
 Deploy docker image to Kubernetes
 Deployment YAML file contains two parts:
 Deployment - describe containers to be deployed
