@@ -2,11 +2,9 @@ const app = require('express')();
 const { PORT = 4000 } = process.env;
 
 
-
-app.get('/', ({ query }, res) => {
-  res.send(("Hello ! " + query));
-});
-
+app.get('/', function (req, res) {
+  res.send('hello world')
+})
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
