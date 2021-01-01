@@ -1,41 +1,69 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-deployment
+  labels:
+    app: new-app
+  name: new-app
+  namespace: default
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: my-app
-  replicas: 1
+      app: new-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        app: my-app
-        env: development
+        app: new-app
     spec:
       containers:
-        image: >- gcr.io/auth-app-279713/github.com/pamuditha/node-app-with-gke-deployment-yaml
-        imagePullPolicy: IfNotPresent
-        name: node-app-with-gke-deployment-yaml-1
-        ports:
-        - containerPort: 4000
-        env:
-        - name: PORT
-          value: "4000"
-        - name: LOG_LEVEL
-          value: "info"
-        - name: NODE_ENV
-          value: "development"
+        - image: >-
+            gcr.io/auth-app-279713/github.com/pamuditha/node-app-with-gke-deployment-yaml
+          imagePullPolicy: IfNotPresent
+          name: node-app-with-gke-deployment-yaml-1
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: new-app
+  name: new-app-hpa-lbit
+  namespace: default
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        targetAverageUtilization: 80
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: new-app
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-app-service
+  finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+  labels:
+    app: new-app
+  name: new-app-service
+  namespace: default
 spec:
-  type: LoadBalancer
+  clusterIP: 10.8.15.221
+  externalTrafficPolicy: Cluster
   ports:
-  - port: 80
-    targetPort: 4000
-    protocol: TCP
+    - nodePort: 32596
+      port: 80
+      protocol: TCP
+      targetPort: 4000
   selector:
-    app: my-app
+    app: new-app
+  sessionAffinity: None
+  type: LoadBalancer
